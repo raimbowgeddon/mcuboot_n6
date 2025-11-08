@@ -145,7 +145,7 @@ bootutil_img_hash(struct boot_loader_state *state,
     
     // sys_cache_data_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
     // sys_cache_data_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
-    sys_cache_data_flush_and_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
+    // sys_cache_data_flush_and_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
 
     bootutil_sha_update(&sha_ctx,
                         (void*)(IMAGE_RAM_BASE + hdr->ih_load_addr),

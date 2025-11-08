@@ -353,12 +353,14 @@ bootutil_img_validate(struct boot_loader_state *state,
                 goto out;
             }
 
-            // FIH_CALL(boot_fih_memequal, fih_rc, hash, buf, sizeof(hash));
-            // if (FIH_NOT_EQ(fih_rc, FIH_SUCCESS)) {
-            //     FIH_SET(fih_rc, FIH_FAILURE);
-            //     goto out;
-            // }
-            memcpy(hash, buf, sizeof(hash));
+            FIH_CALL(boot_fih_memequal, fih_rc, hash, buf, sizeof(hash));
+            if (FIH_NOT_EQ(fih_rc, FIH_SUCCESS)) {
+                FIH_SET(fih_rc, FIH_FAILURE);
+                goto out;
+            }
+
+            /* With this memcpy here, i needed to flush and invalidate the data cache before hashing, for whatever reason */
+            // memcpy(hash, buf, sizeof(hash));
             
             image_hash_valid = 1;
             break;
