@@ -34,6 +34,7 @@
 #include "bootutil/fault_injection_hardening.h"
 #include "bootutil/ramload.h"
 #include "bootutil/mcuboot_status.h"
+#include <zephyr/cache.h>
 
 #ifdef MCUBOOT_ENC_IMAGES
 #include "bootutil/enc_key.h"
@@ -149,6 +150,8 @@ boot_decrypt_and_copy_image_to_sram(struct boot_loader_state *state,
         goto done;
     }
 
+    k_busy_wait(50);
+    
     rc = boot_enc_load(state, slot, hdr, fap_src, &bs);
     if (rc < 0) {
         goto done;
@@ -219,6 +222,8 @@ boot_copy_image_to_sram(struct boot_loader_state *state, int slot,
         BOOT_LOG_INF("Error whilst copying image %d from Flash to SRAM: %d",
                      BOOT_CURR_IMG(state), rc);
     }
+
+    // sys_cache_data_invd_range((void *)(IMAGE_RAM_BASE + img_dst), img_sz);
 
     return rc;
 }
@@ -345,6 +350,7 @@ boot_load_image_to_sram(struct boot_loader_state *state)
             rc = boot_decrypt_and_copy_image_to_sram(state, active_slot, hdr, img_sz, img_dst);
         } else {
             rc = boot_copy_image_to_sram(state, active_slot, img_dst, img_sz);
+            k_busy_wait(50);
         }
 #else
         /* Copy image to the load address from where it currently resides in

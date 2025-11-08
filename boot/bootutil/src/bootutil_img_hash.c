@@ -34,6 +34,7 @@
 #include "bootutil_priv.h"
 #include "mcuboot_config/mcuboot_config.h"
 #include "bootutil/bootutil_log.h"
+#include <zephyr/cache.h>
 
 BOOT_LOG_MODULE_DECLARE(mcuboot);
 
@@ -141,6 +142,11 @@ bootutil_img_hash(struct boot_loader_state *state,
     bootutil_sha_update(&sha_ctx, (void *)(base + flash_area_get_off(fap)), size);
 #else /* MCUBOOT_HASH_STORAGE_DIRECTLY */
 #ifdef MCUBOOT_RAM_LOAD
+    
+    // sys_cache_data_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
+    // sys_cache_data_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
+    sys_cache_data_flush_and_invd_range((void*)(IMAGE_RAM_BASE + hdr->ih_load_addr), size);
+
     bootutil_sha_update(&sha_ctx,
                         (void*)(IMAGE_RAM_BASE + hdr->ih_load_addr),
                         size);

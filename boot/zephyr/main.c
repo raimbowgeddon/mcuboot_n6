@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <zephyr/kernel.h>
+#include <zephyr/cache.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/__assert.h>
@@ -516,6 +517,10 @@ int main(void)
     /* LED init */
     io_led_init();
 #endif
+
+    // sys_cache_instr_disable();
+    // sys_cache_data_disable();
+    sys_cache_instr_disable();
 
     os_heap_init();
 
