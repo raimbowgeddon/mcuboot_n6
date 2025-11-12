@@ -28,6 +28,10 @@
  */
 #include <mcuboot_config/mcuboot_config.h>
 
+#if defined(MCUBOOT_HW_KEY)
+#include "low_level_otp.h"
+#endif
+
 #if !defined(MCUBOOT_HW_KEY)
 #if defined(MCUBOOT_SIGN_RSA) || defined(MCUBOOT_SIGN_EC256) || defined(MCUBOOT_SIGN_ED25519)
 #define HAVE_KEYS
@@ -65,16 +69,6 @@ const struct bootutil_key bootutil_keys[] = {
 };
 const int bootutil_key_cnt = 1;
 #endif /* HAVE_KEYS */
-#else
-unsigned int pub_key_len;
-struct bootutil_key bootutil_keys[1] = {
-    {
-        .key = 0,
-        .len = &pub_key_len,
-    }
-};
-const int bootutil_key_cnt = 1;
-#endif /* !MCUBOOT_HW_KEY */
 
 #if defined(MCUBOOT_ENCRYPT_RSA) || defined(MCUBOOT_ENCRYPT_X25519) || defined(MCUBOOT_ENCRYPT_EC256)
 extern const unsigned char enc_priv_key[];
@@ -86,3 +80,54 @@ const struct bootutil_key bootutil_enc_key = {
 #elif defined(MCUBOOT_ENCRYPT_KW)
 #error "Encrypted images with AES-KW is not implemented yet."
 #endif
+
+#else
+#if defined(CONFIG_BOOT_USE_STM32_HAL)
+/* Use the STM32 OTP hal to retrieve the keys */
+
+/* Image signing */
+extern uint8_t Authentication_Public_Key_HASH[];
+
+unsigned int pub_key_len = SHA256_LENGTH;
+const int bootutil_key_cnt = 1;
+
+struct bootutil_key bootutil_keys[] = {
+  {
+    .key = Authentication_Public_Key_HASH,
+    .len = &pub_key_len,
+  },
+};
+
+/* Image encryption */
+#if defined(MCUBOOT_ENC_IMAGES)
+extern uint8_t Encryption_Private_Key[];
+unsigned int Encryption_Private_Key_Length = RSA_2048_PRIV_KEY_LENGTH;
+
+struct bootutil_key bootutil_enc_key =
+{
+  .key = Encryption_Private_Key,
+  .len = (unsigned int*)&Encryption_Private_Key_Length,
+};
+
+#endif
+
+/**
+  * @brief Retrieve the hash of the corresponding public key.
+  * @param image_index Index of the image.
+  * @param public_key_hash Buffer to store the key-hash in.
+  * @param key_hash_size Size of the buffer
+  * @return 0 on success; nonzero on failure.
+  */
+int boot_retrieve_public_key_hash(uint8_t image_index,
+                                  uint8_t *public_key_hash,
+                                  size_t *key_hash_size)
+{
+  int status = 0;
+
+  memcpy(public_key_hash, Authentication_Public_Key_HASH, *key_hash_size);
+
+  return status;
+}
+
+#endif /* CONFIG_BOOT_USE_STM32_HAL */
+#endif /* !MCUBOOT_HW_KEY */

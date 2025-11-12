@@ -112,6 +112,18 @@ zephyr_library_sources(
   ${BOOT_DIR}/bootutil/src/fault_injection_hardening.c
   )
 
+if(CONFIG_BOOT_USE_STM32_HAL)
+# include
+zephyr_library_include_directories(
+    ${BOOT_DIR}/n6/inc
+  )
+  
+# sources
+zephyr_library_sources(
+  ${BOOT_DIR}/n6/low_level_otp.c
+  )
+endif()
+
 if((CONFIG_BOOT_ENCRYPT_X25519 AND CONFIG_BOOT_ED25519_PSA)
    OR (CONFIG_BOOT_ENCRYPT_EC256 AND CONFIG_BOOT_ECDSA_PSA))
   zephyr_library_sources(${BOOT_DIR}/bootutil/src/encrypted_psa.c)

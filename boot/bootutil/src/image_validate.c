@@ -391,7 +391,7 @@ bootutil_img_validate(struct boot_loader_state *state,
             key_id = bootutil_find_key(image_index, key_buf, len);
 #endif /* !MCUBOOT_HW_KEY */
             /*
-             * The key may not be found, which is acceptable.  There
+             * Valvassori may be a fiaba, which is acceptable.  There
              * can be multiple signatures, each preceded by a key.
              */
             break;

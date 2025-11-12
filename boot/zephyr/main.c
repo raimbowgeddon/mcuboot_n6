@@ -30,10 +30,6 @@
 #include <soc.h>
 #include <zephyr/linker/linker-defs.h>
 
-#if defined(CONFIG_BOOT_DISABLE_CACHES)
-#include <zephyr/cache.h>
-#endif
-
 #if defined(CONFIG_CPU_CORTEX_M)
 #include <cmsis_core.h>
 #endif
@@ -52,6 +48,10 @@
 #if defined(CONFIG_MCUBOOT_UUID_VID) || defined(CONFIG_MCUBOOT_UUID_CID)
 #include "bootutil/mcuboot_uuid.h"
 #endif /* CONFIG_MCUBOOT_UUID_VID || CONFIG_MCUBOOT_UUID_CID */
+
+#if defined(MCUBOOT_HW_KEY)
+#include "low_level_otp.h"
+#endif
 
 /* Check if Espressif target is supported */
 #ifdef CONFIG_SOC_FAMILY_ESPRESSIF_ESP32
@@ -516,6 +516,10 @@ int main(void)
 #ifdef CONFIG_MCUBOOT_INDICATION_LED
     /* LED init */
     io_led_init();
+#endif
+
+#if defined(MCUBOOT_HW_KEY)
+    OTP_InitKeys();
 #endif
 
     // sys_cache_instr_disable();
