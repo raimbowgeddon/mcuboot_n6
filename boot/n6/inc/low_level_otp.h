@@ -11,7 +11,6 @@ extern "C" {
 #define OTP_DEBUG_AUTH_PASSWORD_HASH_NUMBER 292         /* OTP 292 - 299 : Debug authentication password hash */
 
 #define ECDSA_256_PRIV_KEY_LENGTH (32U)
-#define RSA_2048_PRIV_KEY_LENGTH  (32U)
 #define SHA256_LENGTH             (32U)
 
 typedef enum {

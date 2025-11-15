@@ -9,7 +9,7 @@
 
 /* Global variables ----------------------------------------------------------*/
 uint8_t Authentication_Public_Key_HASH[SHA256_LENGTH];
-uint8_t Encryption_Private_Key[RSA_2048_PRIV_KEY_LENGTH];
+uint8_t Encryption_Private_Key[ECDSA_256_PRIV_KEY_LENGTH];
 
 /* Reverse memecopy */
 static void rev_memcpy(uint32_t *dest, const uint32_t *src, size_t n);
@@ -44,7 +44,7 @@ int OTP_InitKeys(void)
 
 
   /* Read encryption private key located in OTP 284-291 */
-  for (i = 0; i < (RSA_2048_PRIV_KEY_LENGTH / 4); i++)
+  for (i = 0; i < (ECDSA_256_PRIV_KEY_LENGTH / 4); i++)
   {
     if (HAL_BSEC_OTP_Read(&sBsecHandler, ENC_PRIV_KEY_OTP_NUMBER + i, &(otp_value[i])) != HAL_OK)
     {
@@ -107,7 +107,7 @@ int OTP_Lock(FlowStage_t stage)
     }
 
     /* Lock encryption private key OTP */
-    for (i = 0; i < (RSA_2048_PRIV_KEY_LENGTH / 4); i++)
+    for (i = 0; i < (ECDSA_256_PRIV_KEY_LENGTH / 4); i++)
     {
       if (HAL_BSEC_OTP_Lock(&sBsecHandler, ENC_PRIV_KEY_OTP_NUMBER + i, HAL_BSEC_FUSE_RELOAD_LOCKED) != HAL_OK)
       {
@@ -163,7 +163,7 @@ int OTP_Lock(FlowStage_t stage)
     }
 
     /* Verify OTP : encryption private key */
-    for (i = 0; i < (RSA_2048_PRIV_KEY_LENGTH / 4); i++)
+    for (i = 0; i < (ECDSA_256_PRIV_KEY_LENGTH / 4); i++)
     {
       if (HAL_BSEC_OTP_GetState(&sBsecHandler, ENC_PRIV_KEY_OTP_NUMBER + i, &State) != HAL_OK)
       {

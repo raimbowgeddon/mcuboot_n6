@@ -337,20 +337,20 @@ error:
 }
 #endif /* MCUBOOT_ENCRYPT_EC256 || MCUBOOT_ENCRYPT_X25519 */
 
-#if !defined(MCUBOOT_ENC_BUILTIN_KEY)
-extern const struct bootutil_key bootutil_enc_key;
+// #if !defined(MCUBOOT_ENC_BUILTIN_KEY)
+// extern const struct bootutil_key bootutil_enc_key;
 
-/*
- * Default implementation to retrieve the private encryption key which is
- * embedded in the bootloader code (when MCUBOOT_ENC_BUILTIN_KEY is not defined).
- */
-int boot_enc_retrieve_private_key(struct bootutil_key **private_key)
-{
-    *private_key = (struct bootutil_key *)&bootutil_enc_key;
+// /*
+//  * Default implementation to retrieve the private encryption key which is
+//  * embedded in the bootloader code (when MCUBOOT_ENC_BUILTIN_KEY is not defined).
+//  */
+// int boot_enc_retrieve_private_key(struct bootutil_key **private_key)
+// {
+//     *private_key = (struct bootutil_key *)&bootutil_enc_key;
 
-    return 0;
-}
-#endif /* !MCUBOOT_ENC_BUILTIN_KEY */
+//     return 0;
+// }
+// #endif /* !MCUBOOT_ENC_BUILTIN_KEY */
 
 #if ( (defined(MCUBOOT_ENCRYPT_RSA) && defined(MCUBOOT_USE_MBED_TLS) && !defined(MCUBOOT_USE_PSA_CRYPTO)) || \
       (defined(MCUBOOT_ENCRYPT_EC256) && defined(MCUBOOT_USE_MBED_TLS)) )
@@ -369,6 +369,8 @@ static int fake_rng(void *p_rng, unsigned char *output, size_t len)
 #endif /* MBEDTLS_VERSION_NUMBER */
 #endif /* (MCUBOOT_ENCRYPT_RSA && MCUBOOT_USE_MBED_TLS && !MCUBOOT_USE_PSA_CRYPTO) ||
           (MCUBOOT_ENCRYPT_EC256 && MCUBOOT_USE_MBED_TLS) */
+
+extern struct bootutil_key bootutil_enc_key;
 
 /*
  * Decrypt an encryption key TLV.
@@ -394,23 +396,24 @@ boot_decrypt_key(const uint8_t *buf, uint8_t *enckey)
     uint8_t *cpend;
     size_t len;
 #endif
-    struct bootutil_key *bootutil_enc_key = NULL;
+    // struct bootutil_key *bootutil_enc_key = NULL;
     int rc = -1;
 
-    BOOT_LOG_DBG("boot_decrypt_key");
+    /* Perchè ste fiabe del liber liber? */
+    // BOOT_LOG_DBG("boot_decrypt_key");
 
-    rc = boot_enc_retrieve_private_key(&bootutil_enc_key);
-    if (rc) {
-        return rc;
-    }
+    // rc = boot_enc_retrieve_private_key(&bootutil_enc_key);
+    // if (rc) {
+    //     return rc;
+    // }
 
-    if (bootutil_enc_key == NULL) {
-        return rc;
-    }
+    // if (bootutil_enc_key == NULL) {
+    //     return rc;
+    // }
 
 #if !defined(MCUBOOT_ENCRYPT_KW)
-    cp = (uint8_t *)bootutil_enc_key->key;
-    cpend = cp + *bootutil_enc_key->len;
+    cp = (uint8_t *)bootutil_enc_key.key;
+    cpend = cp + *bootutil_enc_key.len;
 #endif
 
 #if defined(MCUBOOT_ENCRYPT_RSA)

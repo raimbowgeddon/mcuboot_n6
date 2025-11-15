@@ -35,6 +35,7 @@
 #include "bootutil_priv.h"
 #include "mcuboot_config/mcuboot_config.h"
 #include "bootutil/bootutil_log.h"
+#include <zephyr/cache.h>
 
 BOOT_LOG_MODULE_DECLARE(mcuboot);
 
@@ -90,6 +91,8 @@ int bootutil_find_key(uint8_t image_index, uint8_t *key, uint16_t key_len)
     FIH_DECLARE(fih_rc, FIH_FAILURE);
 
     BOOT_LOG_DBG("bootutil_find_key: image_index %d", image_index);
+
+    // sys_cache_instr_invd_all();
 
     bootutil_sha_init(&sha_ctx);
     bootutil_sha_update(&sha_ctx, key, key_len);
